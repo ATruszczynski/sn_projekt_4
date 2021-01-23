@@ -2,12 +2,12 @@ Czytanie dat?
 Generalnie punkty mają mieć postać [3 poprzednie dni, 1 następny]
 W następnym dniu są tylko temeperatura średnia i czy wiatr ma siłe większą niż 8 m/s
 Różne kodowanie danych wejściowych i wyjściowych
-    weather_desc jako liczby/OHE
     Kelvin/Celsjusz
     Przeskalowanie ciśnienia o -1000hpa
-Rodzielić punkty względem miast, żeby uczyć sieci dla każdego miasta osobna
 Rodzielić punkty względem danych wyjściowych (punkty zawierajace tylko temp, lub tylko wiatr)
 Agregacja danych (średnia, odchylenie, współczynnik regresji?). Per day or per point?
 
 Popraw ciśnienie w Vancouver
 Duża liczba braków przynajmniej w wind_speed
+Są braki w weather_desc
+Zrób żeby czytało wszystkie tabelki z folderu po prostu
