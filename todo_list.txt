@@ -11,3 +11,4 @@ Popraw ciśnienie w Vancouver
 Duża liczba braków przynajmniej w wind_speed
 Są braki w weather_desc
 Zrób żeby czytało wszystkie tabelki z folderu po prostu
+Better names
