@@ -5,7 +5,7 @@ from os import walk
 from sklearn.linear_model import LinearRegression
 import shutil
 
-nrows = 150
+nrows = None
 
 frames = read_tables(archive_path, nrows=nrows)
 
@@ -20,23 +20,6 @@ for column in frame.columns[1:]:
 
 
 if True:
-    # zamień weather_desc na liczby
-
-    wd = frames['weather_description']
-    uniqes = wd.iloc[:, 2:].values.ravel()
-    uniqes = pd.unique(uniqes)
-    # print(uniqes)
-
-    i = 0
-    dict = {}
-    for item in uniqes:
-        dict[item] = i
-        i = i + 1
-
-    wd.replace(dict, inplace=True)
-
-    frames['weather_description'] = wd
-
     # frame'y z medianami
 
     med_frames = {}
@@ -57,6 +40,25 @@ if True:
         print(f'Filled {name}.csv')
         frames[name] = frame
 
+    # zamień weather_desc na liczby
+
+    wd = frames['weather_description']
+    uniqes = wd.iloc[:, 2:].values.ravel()
+    uniqes = pd.unique(uniqes)
+    # print(uniqes)
+
+    i = 0
+    dict = {}
+    for item in uniqes:
+        dict[item] = i
+        i = i + 1
+
+    wd.replace(dict, inplace=True)
+
+    frames['weather_description'] = wd
+
+
+
 
     # zapisz uzupełnione dane
 
@@ -74,13 +76,13 @@ if True:
             frame.iloc[0, :] = frame.iloc[1, :]
             frame.iloc[0, 0] = tmp_date
         else:
-            frame = frame.interpolate(method='linear', axis=0, limit_direction='both')
+            frame.iloc[:, 1:] = frame.iloc[:, 1:].fillna(frame.iloc[:, 1:].median())
             frame = round(frame)
         print(f'Filled {name}.csv')
         med_frames[name] = frame
 
 
-    # zapisz uzupełnione dane
+    # zapisz dane uzupełnione medianą
 
     for name in med_frames:
         frame = med_frames[name]
@@ -148,7 +150,7 @@ if True:
         city_ohe_frame.to_csv(cities_ohe_path + city + '.csv', index=False)
 
 
-def turn_into_points(directory_to_turn, directory_to_save_all, directory_to_save_separated=None, file_name_prefix=''):
+def turn_into_points(directory_to_turn, directory_to_save_all, directory_to_save_separated=None, file_name_prefix='', geo=False):
     frames = read_tables(directory_to_turn, nrows=nrows)
 
     attr = pd.read_csv(archive_path + 'city_attributes.csv')
@@ -157,7 +159,10 @@ def turn_into_points(directory_to_turn, directory_to_save_all, directory_to_save
     any_frame = frames[list(frames.keys())[0]]
 
     frame_col_names = any_frame.columns[1:]
-    col_names = ['latitude', 'longitude']
+    if geo:
+        col_names = ['latitude', 'longitude']
+    else:
+        col_names = []
 
     for i in range(72):
         for j in range(len(frame_col_names)):
@@ -183,7 +188,7 @@ def turn_into_points(directory_to_turn, directory_to_save_all, directory_to_save
 
         lat = attr.loc[attr['City'] == city]['Latitude'].iloc[0]
         lon = attr.loc[attr['City'] == city]['Longitude'].iloc[0]
-        print(f'{city}, {lat}-{lon}')
+        # print(f'{city}, {lat}-{lon}')
 
         city_data = []
 
@@ -195,7 +200,8 @@ def turn_into_points(directory_to_turn, directory_to_save_all, directory_to_save
             df = city_frame.iloc[i:i+72, 1:]
             t = []
 
-            t = [lat, lon]
+            if geo:
+                t = [lat, lon]
 
             for j in range(len(df.index)):
                 t.extend(df.iloc[j, :].tolist())
@@ -310,12 +316,12 @@ def turn_into_aggregate_points(directory_to_turn, directory_to_save_all):
         print(f'Prepared points from {city}')
 
     df = pd.DataFrame.from_records(all_data, columns=col_names)
-    df.to_csv(directory_to_save_all + 'points.csv', index=False)
+    df.to_csv(directory_to_save_all + 'aggregate_points.csv', index=False)
     print('Written aggregate points from cities')
 
 
-turn_into_points(cities_path, processed_cities_normal_all, processed_cities_normal_sep)
-# turn_into_points(cities_ohe_path, processed_cities_encoded_all)
-# turn_into_points(cities_median_path, processed_cities_median_all)
-# turn_into_aggregate_points(cities_path, aggregate_cities_path)
-# shutil.rmtree(pre_processed_path)
+turn_into_points(cities_path, processed_cities_normal_all, processed_cities_normal_sep, geo=True)
+turn_into_points(cities_ohe_path, processed_cities_encoded_all)
+turn_into_points(cities_median_path, processed_cities_median_all)
+turn_into_aggregate_points(cities_path, aggregate_cities_path)
+shutil.rmtree(pre_processed_path)
