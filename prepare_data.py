@@ -5,7 +5,7 @@ from os import walk
 from sklearn.linear_model import LinearRegression
 import shutil
 
-nrows = None
+nrows = 300
 
 frames = read_tables(archive_path, nrows=nrows)
 
@@ -324,4 +324,4 @@ turn_into_points(cities_path, processed_cities_normal_all, processed_cities_norm
 turn_into_points(cities_ohe_path, processed_cities_encoded_all)
 turn_into_points(cities_median_path, processed_cities_median_all)
 turn_into_aggregate_points(cities_path, aggregate_cities_path)
-shutil.rmtree(pre_processed_path)
+# shutil.rmtree(pre_processed_path)
