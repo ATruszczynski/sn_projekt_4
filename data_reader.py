@@ -11,11 +11,13 @@ archive_path = archive_path_alek
 
 pre_processed_path = archive_path + 'pre_processed\\'
 processed_path = archive_path + 'processed\\'
+processed_cities_normal_all = processed_path + 'cities_all\\'
+processed_cities_normal_sep = processed_path + 'cities_sep\\'
 filled_path = pre_processed_path + 'filled\\'
 cities_ohe_path = pre_processed_path + 'cities\\ohe\\'
 cities_path = pre_processed_path + 'cities\\normal\\'
 
-paths_to_ensure = [pre_processed_path, processed_path, filled_path, cities_ohe_path, cities_path]
+paths_to_ensure = [pre_processed_path, processed_path, processed_cities_normal_all, processed_cities_normal_sep, filled_path, cities_ohe_path, cities_path]
 
 for path in paths_to_ensure:
     if not os.path.exists(path):
