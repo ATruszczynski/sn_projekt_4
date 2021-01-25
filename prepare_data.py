@@ -81,6 +81,10 @@ if True:
         print(f'Filled {name}.csv')
         med_frames[name] = frame
 
+    wd = med_frames['weather_description']
+    wd.replace(dict, inplace=True)
+    med_frames['weather_description'] = wd
+
 
     # zapisz dane uzupełnione medianą
 
@@ -99,7 +103,7 @@ if True:
 
         for city in cities:
             data = [frame['datetime']]
-            for par_name in file_names:
+            for par_name in namess:
                 data.append(frames[par_name][city])
             city_frame = pd.concat(data, axis=1, keys=col_names)
             print(f'Prepared frame for {city}')
@@ -125,10 +129,11 @@ if True:
         i = i + 1
 
     col_names = ['datetime']
-    col_names.extend(file_names[:3])
+    for name in frames:
+        if name != 'weather_description':
+            col_names.append(name)
     for uni in uniqes:
         col_names.append(uni)
-    col_names.extend(file_names[4:])
 
     frames['humidity'].iloc[:, 1:] -= 50
     frames['pressure'].iloc[:, 1:] -= 1000
@@ -140,7 +145,7 @@ if True:
     for city in cities:
         data = [datetimes]
         for par_name in col_names[1:]:
-            if par_name in file_names:
+            if par_name in frames.keys() and par_name != 'weather_description':
                 data.append(frames[par_name][city])
             else:
                 ohe = frames['weather_description'][city] == par_name
